@@ -1,0 +1,11 @@
+INCLUDEPATH +=$$PWD/../commonlib\
+            $$PWD/../commonlib/epoll\
+            $$PWD/../commonlib/prodata\
+            $$PWD/../commonlib/prodata/sem\
+            $$PWD/../commonlib/reflect\
+            $$PWD/../commonlib/timer\
+            $$PWD/../commonlib/zprint\
+            $$PWD/../commonlib/mutex
+
+LIBS += $$PWD/../build-commonlib-unknown-Debug/libcommonlib.a
+

@@ -1,0 +1,9 @@
+
+
+INCLUDEPATH += ./StaticLibrary
+
+LIBS += $$PWD/StaticLibrary/StaticLibrary.lib
+
+HEADERS += StaticLibrary/staticlibrary.h
+
+
