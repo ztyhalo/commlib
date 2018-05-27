@@ -95,4 +95,88 @@ private:
 
 #define P_Connect( sender, signal, receiver, method) ( (sender)->signal.Bind(receiver, method) )
 
+//PARA_TMP 数据参数模板 能够表示不同的回调参数类型
+
+
+class No_SlotBase
+{
+public:
+    virtual void Exec(void) = 0;
+};
+// SLOT_OWN 操函数的拥有者
+
+template<class SLOT_OWN>
+class No_SlotImpl : public No_SlotBase
+{
+public:
+    No_SlotImpl(SLOT_OWN* pObj, void (SLOT_OWN::*func)(void) )
+    {
+        m_pObj = pObj;
+        m_Func = func;
+    }
+
+    void Exec(void)
+    {
+        (m_pObj->*m_Func)();
+    }
+
+private:
+    SLOT_OWN * m_pObj;
+    void (SLOT_OWN::*m_Func)(void);
+};
+
+
+class No_Slot
+{
+public:
+    template<class SLOT_OWN>
+    No_Slot(SLOT_OWN* pObj, void (SLOT_OWN::*func)(void))
+    {
+        m_pSlotBase = new No_SlotImpl<SLOT_OWN>(pObj, func);
+    }
+
+    ~No_Slot()
+    {
+        delete m_pSlotBase;
+    }
+
+    void Exec(void)
+    {
+        m_pSlotBase->Exec();
+    }
+
+private:
+    No_SlotBase* m_pSlotBase;
+};
+
+class No_Signal
+{
+public:
+    template<class SLOT_OWN>
+    void Bind(SLOT_OWN* pObj, void (SLOT_OWN::*func)(void))
+    {
+        m_pSlotSet.push_back( new No_Slot(pObj,func) );
+    }
+
+    ~No_Signal()
+    {
+        for(int i=0;i<(int)m_pSlotSet.size();i++)
+        {
+            delete m_pSlotSet[i];
+        }
+    }
+
+    void operator()(void)
+    {
+        for(int i=0;i<(int)m_pSlotSet.size();i++)
+        {
+            m_pSlotSet[i]->Exec();
+        }
+    }
+
+private:
+    vector< No_Slot * > m_pSlotSet;
+};
+
+
 #endif /*__SIGSLOT_H__*/

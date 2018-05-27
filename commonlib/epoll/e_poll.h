@@ -277,6 +277,7 @@ public:
     FILE_POLL()
     {
         pth.pthread_init(this, &FILE_POLL::pth_exe);
+        pth.start();
     }
     ~FILE_POLL()
     {
@@ -304,13 +305,79 @@ public:
                 {
                     fileval(buf);
                 }
+                else
+                {
+                    zprintf1("file read num %d is error!\n", num);
+                }
                 zprintf4("num is %d para is %d\n", num, sizeof(PARA_T));
             }
 
 
         }
     }
+    template<class SLOT_OWN>
+    void f_bind(SLOT_OWN* pObj, void (SLOT_OWN::*func)(PARA_T))
+    {
+//        m_pSlotSet.push_back( new ZSlot<PARA_T>(pObj,func) );
+        fileval.Bind(pObj, func);
+    }
 };
 
+
+template<class PARA_T>
+class F_VOID_POLL:public z_poll
+{
+public:
+Z_PTH<F_VOID_POLL> pth;
+No_Signal          fileval;
+public:
+    F_VOID_POLL()
+    {
+        pth.pthread_init(this, &F_VOID_POLL::pth_exe);
+        pth.start();
+    }
+    ~F_VOID_POLL()
+    {
+        zprintf3("destory FILE_POLL!\n");
+    }
+    void pth_exe(void)
+    {
+        if(get_epoll_size() > 1)
+        {
+            zprintf1("FILE_POLL add file too much!\n");
+        }
+        struct epoll_event events[1];
+        PARA_T buf;
+        int num;
+        int nfds;
+        for (;  ; )
+        {
+            memset(&events, 0, sizeof(events));
+            nfds = epoll_wait(epfd, events, 1, -1);
+
+            if(nfds > 0)
+            {
+                zprintf4("fd is %d\n", get_fd(0));
+                if((num = read(get_fd(0), &buf, sizeof(PARA_T))) == sizeof(PARA_T))
+                {
+                    fileval();
+                }
+                else
+                {
+                    zprintf1("file read num %d is error!\n", num);
+                }
+                zprintf4("num is %d para is %d\n", num, sizeof(PARA_T));
+            }
+
+
+        }
+    }
+    template<class SLOT_OWN>
+    void f_bind(SLOT_OWN* pObj, void (SLOT_OWN::*func)(void))
+    {
+//        m_pSlotSet.push_back( new ZSlot<PARA_T>(pObj,func) );
+        fileval.Bind(pObj, func);
+    }
+};
  
 #endif  /* TIMER_POLL_H */

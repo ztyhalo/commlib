@@ -4,7 +4,7 @@
 #include "zprint.h"
 #include "e_poll.h"
 
-
+PRINTF_CLASS gpr(NULL, 1);
 class VAL_CLASS
 {
 public:
@@ -36,9 +36,9 @@ typedef struct
 class FILE_OUT
 {
 public:
-    void print_time_context(T_TimeVal val)
+    void print_time_context(void)
     {
-        printf("test %s\n", val.buf);
+        gpr.timemsprintf("test \n");
     }
 };
 
@@ -51,6 +51,7 @@ FILE_OUT ot;
 VAL_CLASS ptest;
 
 FILE_POLL<T_TimeVal> timefile;
+Z_TIMER ntimer;
 
 int out_printf(TEvent * val)
 {
@@ -61,15 +62,16 @@ int out_outprintf(TEvent * val)
     test_p.timeprintf("time2 ok\n");
 }
 
+
 int main(int argc, char *argv[])
 {
+//    timefile.pth.start();
+//    timefile.e_poll_add(evt.filed);
 
-    timefile.e_poll_add(evt.filed);
-    timefile.pth.start();
     zprintf4("%d file\n", evt.filed);
 //    P_Connect(&timefile,fileval, &ot, &FILE_OUT::print_time_context);
-    timefile.fileval.Bind(&ot, &FILE_OUT::print_time_context);
-    evt.timer_start(2);
+//    timefile.fileval.Bind(&ot, &FILE_OUT::print_time_context);
+//    evt.timer_start(2);
 //    ti.start();
 //    ti.add_event(1,out_printf);
 //    ti.add_event(1,out_outprintf);
@@ -77,6 +79,8 @@ int main(int argc, char *argv[])
 //    ptest.pth.start();
 //    ti.start();
 
+    ntimer.timer_start(2, 1);
+    ntimer.f_bind(&ot, &FILE_OUT::print_time_context);
 
     while(1)
     {

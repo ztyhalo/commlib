@@ -22,6 +22,6 @@ INCLUDEPATH +=$$PWD/../commonlib\
             $$PWD/../commonlib/zprint\
             $$PWD/../commonlib/mutex
 
-LIBS += $$PWD/../build-commonlib-unknown-Debug/libcommonlib.a
+LIBS += $$PWD/../../build-commonlib-unknown-Debug/libcommonlib.a
 
 SOURCES += main.cpp
