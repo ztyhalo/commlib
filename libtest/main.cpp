@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "zprint.h"
 #include "e_poll.h"
-
+#include "zevent.h"
 
 class VAL_CLASS
 {
@@ -38,7 +38,7 @@ class FILE_OUT
 public:
     void print_time_context(void)
     {
-        zprintf1("test \n");
+        zprintf1("赵唯一 \n");
     }
 };
 
@@ -59,6 +59,8 @@ int main(int argc, char *argv[])
 {
 
     zprintf4("%d file\n", evt.filed);
+
+ //   Z_EVENT<T_TimeVal> va;
 
     ntimer.timer_start(2, 1);
     ntimer.f_bind(&ot, &FILE_OUT::print_time_context);

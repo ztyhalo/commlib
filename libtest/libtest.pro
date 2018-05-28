@@ -20,7 +20,9 @@ INCLUDEPATH +=$$PWD/../commonlib\
             $$PWD/../commonlib/reflect\
             $$PWD/../commonlib/timer\
             $$PWD/../commonlib/zprint\
-            $$PWD/../commonlib/mutex
+            $$PWD/../commonlib/mutex\
+            $$PWD/../commonlib/sigslot
+
 
 LIBS += $$PWD/../../build-commonlib-unknown-Debug/libcommonlib.a
 

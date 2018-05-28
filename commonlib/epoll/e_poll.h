@@ -32,7 +32,7 @@
 #define EVENTS 100
 
 
-class z_poll:public MUTEX_CLASS
+class z_poll:virtual public MUTEX_CLASS
 {
 public:
       int epfd;        //文件指针
@@ -268,60 +268,127 @@ private:
 
 
 template<class PARA_T>
-class FILE_POLL:public z_poll
+class V_FILE_POLL:public z_poll
 {
 public:
-Z_PTH<FILE_POLL> pth;
+Z_PTH<V_FILE_POLL> pth;
 ZSignal<PARA_T>  fileval;
 public:
-    FILE_POLL()
+    V_FILE_POLL()
     {
-        pth.pthread_init(this, &FILE_POLL::pth_exe);
+        pth.pthread_init(this, &V_FILE_POLL::pth_exe);
         pth.start();
     }
-    ~FILE_POLL()
+    ~V_FILE_POLL()
     {
         zprintf3("destory FILE_POLL!\n");
     }
-    virtual void pth_exe(void)
-    {
-        if(get_epoll_size() > 1)
-        {
-            zprintf1("FILE_POLL add file too much!\n");
-        }
-        struct epoll_event events[1];
-        PARA_T buf;
-        int num;
-        int nfds;
-        for (;  ; )
-        {
-            memset(&events, 0, sizeof(events));
-            nfds = epoll_wait(epfd, events, 1, -1);
+    virtual void pth_exe(void) =0;
 
-            if(nfds > 0)
-            {
-                zprintf4("fd is %d\n", get_fd(0));
-                if((num = read(get_fd(0), &buf, sizeof(PARA_T))) == sizeof(PARA_T))
-                {
-                    fileval(buf);
-                }
-                else
-                {
-                    zprintf1("file read num %d is error!\n", num);
-                }
-                zprintf4("num is %d para is %d\n", num, sizeof(PARA_T));
-            }
-
-
-        }
-    }
     template<class SLOT_OWN>
     void f_bind(SLOT_OWN* pObj, void (SLOT_OWN::*func)(PARA_T))
     {
 //        m_pSlotSet.push_back( new ZSlot<PARA_T>(pObj,func) );
         fileval.Bind(pObj, func);
     }
+
 };
+
+
+template<class PARA_T>
+class FILE_POLL:public V_FILE_POLL<PARA_T>
+{
+public:
+        void pth_exe(void)
+        {
+            if(this->get_epoll_size() > 1)
+            {
+                zprintf1("FILE_POLL add file too much!\n");
+            }
+            struct epoll_event events[1];
+            PARA_T buf;
+            int num;
+            int nfds;
+            for (;  ; )
+            {
+                memset(&events, 0, sizeof(events));
+                nfds = epoll_wait(this->epfd, events, 1, -1);
+
+                if(nfds > 0)
+                {
+                    zprintf4("fd is %d\n", get_fd(0));
+                    if((num = read(this->get_fd(0), &buf, sizeof(PARA_T))) == sizeof(PARA_T))
+                    {
+                        this->fileval(buf);
+                    }
+                    else
+                    {
+                        zprintf1("file read num %d is error!\n", num);
+                    }
+                    zprintf4("num is %d para is %d\n", num, sizeof(PARA_T));
+                }
+
+
+            }
+        }
+};
+
+//template<class PARA_T>
+//class FILE_POLL:public z_poll
+//{
+//public:
+//Z_PTH<FILE_POLL> pth;
+//ZSignal<PARA_T>  fileval;
+//public:
+//    FILE_POLL()
+//    {
+//        pth.pthread_init(this, &FILE_POLL::pth_exe);
+//        pth.start();
+//    }
+//    ~FILE_POLL()
+//    {
+//        zprintf3("destory FILE_POLL!\n");
+//    }
+//    void pth_exe(void)
+//    {
+//        if(get_epoll_size() > 1)
+//        {
+//            zprintf1("FILE_POLL add file too much!\n");
+//        }
+//        struct epoll_event events[1];
+//        PARA_T buf;
+//        int num;
+//        int nfds;
+//        for (;  ; )
+//        {
+//            memset(&events, 0, sizeof(events));
+//            nfds = epoll_wait(epfd, events, 1, -1);
+
+//            if(nfds > 0)
+//            {
+//                zprintf4("fd is %d\n", get_fd(0));
+//                if((num = read(get_fd(0), &buf, sizeof(PARA_T))) == sizeof(PARA_T))
+//                {
+//                    fileval(buf);
+//                }
+//                else
+//                {
+//                    zprintf1("file read num %d is error!\n", num);
+//                }
+//                zprintf4("num is %d para is %d\n", num, sizeof(PARA_T));
+//            }
+
+
+//        }
+//    }
+//    template<class SLOT_OWN>
+//    void f_bind(SLOT_OWN* pObj, void (SLOT_OWN::*func)(PARA_T))
+//    {
+////        m_pSlotSet.push_back( new ZSlot<PARA_T>(pObj,func) );
+//        fileval.Bind(pObj, func);
+//    }
+
+//};
 
 
 template<class PARA_T>

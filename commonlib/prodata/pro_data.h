@@ -23,7 +23,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include "e_poll.h"
-
+#include "mutex.h"
 
 using namespace std;
 
@@ -307,6 +307,68 @@ int Z_Buf_T<DTYPE,N>::wait_buf_sem(void)
     sem_wait(&mgsem);
     return 0;
 }
+
+
+//数据buf操作类
+template<class DTYPE, int N = 2>
+class Z_Buf:virtual public MUTEX_CLASS
+{
+public:
+    DTYPE                buf[N];
+    uint                 sem_wr;
+    uint                 sem_rd;
+
+
+public:
+    Z_Buf()
+    {
+        sem_wr = 0;
+        sem_rd = 0;
+        memset(buf, 0x00, sizeof(buf));
+    }
+    ~Z_Buf(){
+        zprintf3("destory Z_Buf!\n");
+    }
+
+    int buf_write_data(DTYPE val)
+    {
+        int err = 0;
+        lock();
+        buf[sem_wr] = val;
+        sem_wr++;
+        sem_wr %= N;
+
+        if(sem_wr == sem_rd)
+        {
+            zprintf1("Z_Buf sembuf_t over!\n");
+            err = -1;
+        }
+        unlock();
+        return err;
+    }
+
+    int  buf_read_data(DTYPE & val)
+    {
+        int err = 0;
+        lock();
+        if(sem_rd != sem_wr)
+        {
+            val = buf[sem_rd];
+            sem_rd++;
+            sem_rd %= N;
+        }
+        else
+        {
+            zprintf1("Z_Buf read err!\n");
+            err = -1;
+        }
+
+        return err;
+    }
+
+
+};
+
 
 //带线程回调的buf操作类
 template<class DTYPE, int N = 2, class F=void>

@@ -137,7 +137,8 @@ public:
 
     ~No_Slot()
     {
-        delete m_pSlotBase;
+        if(m_pSlotBase != NULL)
+            delete m_pSlotBase;
     }
 
     void Exec(void)
