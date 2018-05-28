@@ -26,7 +26,7 @@
 #include <QDebug>
 #include "zprint.h"
 #include "mutex.h"
-#include "sigslot/sigslot.h"
+#include "sigslot.h"
 
 #define MAXFDS 4
 #define EVENTS 100
@@ -283,7 +283,7 @@ public:
     {
         zprintf3("destory FILE_POLL!\n");
     }
-    void pth_exe(void)
+    virtual void pth_exe(void)
     {
         if(get_epoll_size() > 1)
         {
@@ -336,6 +336,8 @@ public:
         pth.pthread_init(this, &F_VOID_POLL::pth_exe);
         pth.start();
     }
+
+
     ~F_VOID_POLL()
     {
         zprintf3("destory FILE_POLL!\n");

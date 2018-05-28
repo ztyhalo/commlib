@@ -10,6 +10,8 @@
 #include "mutex.h"
 using namespace std;
 
+#define DEBUG_F_DIR "/media/mmcblk0p1/debug"
+
 #define timeprf(...) do { time_t now;\
                         struct tm timenow;\
                         char stbuf[32];\
@@ -64,6 +66,7 @@ public:
             fclose(pfd);
         }
     }
+    void printf_init(const char * name, int fd);
     void zprintf(const char * format, ...);
     void timeprintf(const char * format, ...);
     void timemsprintf(const char * format, ...);
@@ -93,23 +96,24 @@ public:
 
 };
 
-#define PRINT_PRO      1
+extern PRINTF_CLASS debug_p;
+
+#define PRINT_PRO      3
 
 #if PRINT_PRO >=1
-#define zprintf1 printf
+#define zprintf1 debug_p.timemsprintf
 #else
 #define zprintf1(...)
 #endif
 
 #if PRINT_PRO >=2
-#define zprintf2 printf
+#define zprintf2 debug_p.timeprintf
 #else
 #define zprintf2(...)
 #endif
 
 #if PRINT_PRO >=3
-#define zprintf3 printf
-#define prop_printf     printf
+#define zprintf3 debug_p.zprintf
 #else
 #define zprintf3(...)
 #endif

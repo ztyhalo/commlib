@@ -18,7 +18,8 @@ INCLUDEPATH = .\
             reflect\
             timer\
             zprint\
-            mutex
+            mutex\
+            sigslot
 
 SOURCES += \
     prodata/sem/syssem.cpp \
@@ -41,7 +42,8 @@ HEADERS += \
     zprint/version.h \
     zprint/zprint.h \
     mutex/mutex.h \
-    sigslot/sigslot.h
+    sigslot/sigslot.h \
+    timer/zevent.h
 unix {
     target.path = /usr/lib
     INSTALLS += target
