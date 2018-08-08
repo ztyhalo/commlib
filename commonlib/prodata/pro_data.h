@@ -362,7 +362,7 @@ public:
             zprintf1("Z_Buf read err!\n");
             err = -1;
         }
-
+        unlock();
         return err;
     }
 

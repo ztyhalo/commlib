@@ -9,22 +9,22 @@ QT       += xml
 
 TARGET = commonlib
 TEMPLATE = lib
-CONFIG += staticlib
+#CONFIG += staticlib
 
 INCLUDEPATH = .\
             epoll\
             prodata\
             prodata/sem\
             reflect\
-            timer\
+            ztimer\
             zprint\
             mutex\
             sigslot
 
 SOURCES += \
     prodata/sem/syssem.cpp \
-    timer/timers.cpp \
-    zprint/zprint.cpp
+    zprint/zprint.cpp \
+    ztimer/ztimers.cpp
 
 HEADERS += \
     epoll/e_poll.h \
@@ -38,12 +38,14 @@ HEADERS += \
     ptxml/ptxml.h \
     reflect/reflect.h \
     reflect/xmlprocess.h \
-    timer/timers.h \
     zprint/version.h \
     zprint/zprint.h \
     mutex/mutex.h \
     sigslot/sigslot.h \
-    timer/zevent.h
+    prodata/zmsg.h \
+    sempro/semprocess.h \
+    ztimer/zevent.h \
+    ztimer/ztimers.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

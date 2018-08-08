@@ -5,8 +5,9 @@
  * 文件监管库V1.1
  */
  
-#ifndef TIMER_POLL_H
-#define TIMER_POLL_H
+#ifndef __E_POLL_H__
+#define __E_POLL_H__
+
 #include <sys/types.h>
 #include <fcntl.h>
 #include <signal.h>
@@ -316,16 +317,16 @@ public:
 
                 if(nfds > 0)
                 {
-                    zprintf4("fd is %d\n", get_fd(0));
+                    zprintf4("FILE_POLL fd is %d\n", this->get_fd(0));
                     if((num = read(this->get_fd(0), &buf, sizeof(PARA_T))) == sizeof(PARA_T))
                     {
                         this->fileval(buf);
                     }
                     else
                     {
-                        zprintf1("file read num %d is error!\n", num);
+                        zprintf1("FILE_POLL file read num %d is error!\n", num);
                     }
-                    zprintf4("num is %d para is %d\n", num, sizeof(PARA_T));
+                    zprintf4("FILE_POLL num is %d para is %d\n", num, sizeof(PARA_T));
                 }
 
 
@@ -449,4 +450,4 @@ public:
     }
 };
  
-#endif  /* TIMER_POLL_H */
+#endif  /* __E_POLL_H__ */
